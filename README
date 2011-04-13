@@ -1,0 +1,58 @@
+Esta es una version preliminar de un plugin para crear un autocomplete para jquery, que a diferencia del autocomplete normal,permita que se realice una carga incremental de la lista de resultados devueltos,esto por medio de paginación.
+
+Para su funcionamiento se requiere:
+	*Jquery 1.4.1 o superior
+	*Jquery UI 1.8.4 o superior
+	
+Para usar el plugin, solo hay que agregar la tag select con un id y nombre, por ejemplo:
+<select id="lista1" name="lista1">
+</select>
+
+Para crear el elemento, hacemos llamado a la funcion:
+$("#lista1").inccombobox({
+        source: "http://sitioweb/ListaDatos/",
+		pagesize:30,
+		minLength:0,
+        onSelect: function (elem,item) {
+            var selitem = item.value;
+            if (selitem == "" || selitem == 0) {
+                $("#panel").hide();
+            }
+            else {
+                obtenerInfoAdicional("#panel", "#lista1", selitem);
+            }
+        }
+    });
+	
+Como se puede ver se tienen las siguientes opciones en el plugin:
+	*source 
+	Es nuestro origen de datos,al cual se va a realizar la peticion de informacion pasando los parametros:
+		*search - La cadena a buscar por el autocomplete
+		*pagesize - La cantidad de registros por pagina que se tienen que regresar
+		*page - El numero de pagina que se esta solicitando(la carga inicial o nueva busqueda envia el valor 1)
+	La peticion se realiza a traves de GET y se envia una peticion similar a esta:
+	http://sitioweb/ListaDatos/?search=abc&pagesize=30&page=1
+	Y se espera que se devuelva una estructura JSON con el siguiente formato:
+	{
+		"page":1,
+		"pages":1,
+		"pagesize":30,	
+		"results":
+			[
+				{"label":"dato1","value":1},
+				{"label":"dato2","value":2},
+				{"label":"dato3","value":3},
+				{"label":"dato4","value":4}
+			]
+	}
+
+Para obtener el valor que selecciona el usuario, se obtiene por medio de:
+	$("#lista1").val();
+El plugin internamente asigna el valor al select sobre el cual se aplico el plugin.
+
+TODO:
+	*Agregar la posibilidad de sobrecargar el source para usar llamados customizados
+	*soporte para usar un arreglo de objetos
+	*Soporte para utilizar una estructura JSON personalizada
+	*Posibilidad de enviar parametros adicionales
+	
